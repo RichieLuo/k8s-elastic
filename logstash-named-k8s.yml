@@ -7,15 +7,12 @@ metadata:
 data:
   logstash-config-named-k8s: |
     input {
-      kafka {
-        codec => "json"
-        bootstrap_servers => "192.168.240.61:9092"
-        topics => "named"
-        group_id => "logstash-named-qa-k8s-topic"
-        consumer_threads => 3
+      file {
+        path => "/path/to/your/log/file.log"
+        start_position => "beginning"
+        sincedb_path => "/dev/null" # 避免记录读取状态，测试时常用
       }
     }
-    
     filter {
       grok {
         match => ["message", "(?<timestamp>%{MONTHDAY}-%{MONTH}-%{YEAR} %{TIME}) queries: client %{IPV4:c_ip}#%{NUMBER:c_port}: query: %{NOTSPACE:queryrec} %{NOTSPACE:dnsclass} %{NOTSPACE:dnstype} \+ \(%{IPV4:dnsbind}\)"]
